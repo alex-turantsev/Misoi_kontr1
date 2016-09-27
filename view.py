@@ -6,6 +6,8 @@ import tkFileDialog
 import os
 from histogram_window import histogram_window
 from PIL import ImageTk, Image
+import subprocess
+import platform
 
 class ApplicationView:
     def __init__(self):
@@ -13,14 +15,15 @@ class ApplicationView:
 
     def initialize(self,app):
         self.root = app
+        self.histogram_window = None
         self.imageFrame = tk.Frame(app,background="red")
         self.imageFrame.pack(side = "left",fill = "both", expand = "True")
 
         self.buttonsFrame = tk.Frame(app, width = 100)
         self.buttonsFrame.pack(side = "right",fill = "y")
 
-        path = '/Users/alex/Downloads/unspecified1.jpeg'
-        self.image = Image.open(path);
+        self.image_path = '/Users/alex/Downloads/unspecified1.jpeg'
+        self.image = Image.open(self.image_path);
         self.imagecopy = self.image.copy()
         img = ImageTk.PhotoImage(self.image)
         self.imageLabel = tk.Label(self.imageFrame, image = img)
@@ -43,8 +46,8 @@ class ApplicationView:
         options['title'] = 'Choose file'
 
     def load_image(self):
-        path = tkFileDialog.askopenfile(**self.file_opt)
-        self.image = Image.open(path);
+        self.image_path = tkFileDialog.askopenfile(**self.file_opt)
+        self.image = Image.open(self.image_path);
         self.imagecopy = self.image.copy()
         img = ImageTk.PhotoImage(self.image)
         self.imageLabel.configure(image = img)
@@ -52,7 +55,7 @@ class ApplicationView:
         self.resize_image((0,0))
 
     def show_histogram(self):
-        self.histogram_window = histogram_window(self.image)
+            self.histogram_window = histogram_window(self.image,self.image_path)
 
     def resize_image(self,event):
         width, height = self.image.size
