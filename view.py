@@ -8,6 +8,7 @@ from histogram_window import histogram_window
 from PIL import ImageTk, Image
 import subprocess
 import platform
+from image_processing import image_processing
 
 class ApplicationView:
     def __init__(self):
@@ -23,13 +24,10 @@ class ApplicationView:
         self.buttonsFrame.pack(side = "right",fill = "y")
 
         self.image_path = '/Users/alex/Downloads/unspecified1.jpeg'
-        self.image = Image.open(self.image_path);
-        self.imagecopy = self.image.copy()
-        img = ImageTk.PhotoImage(self.image)
-        self.imageLabel = tk.Label(self.imageFrame, image = img)
-        self.imageLabel.image = img
+        self.imageLabel = tk.Label(self.imageFrame)
         self.imageLabel.pack(fill = "both", expand = "True")
         self.imageLabel.bind('<Configure>', self.resize_image)
+        self.change_image(Image.open(self.image_path))
 
         load_image_button = tk.Button(self.buttonsFrame , text="Load image", width = 15, command = self.load_image)
         load_image_button.pack( side = "top", padx = 5, pady = 10)
@@ -42,7 +40,7 @@ class ApplicationView:
 
         self.file_opt = options = {}
         options['defaultextension'] = '.jpg'
-        options['filetypes'] = [('image files', ('.jpeg','.jpg','.JPG','.JPEG','.png','.PNG'))]
+        options['filetypes'] = [('image files', ('.jpeg','.jpg','.JPG','.JPEG'))]
         options['initialdir'] = os.path.expanduser('~')
         options['initialfile'] = 'myfile.txt'
         options['parent'] = app.root
@@ -50,26 +48,20 @@ class ApplicationView:
 
     def load_image(self):
         image_file = tkFileDialog.askopenfile(**self.file_opt)
-        self.image = Image.open(image_file);
         self.image_file = image_file.name
-        self.imagecopy = self.image.copy()
-        img = ImageTk.PhotoImage(self.image)
-        self.imageLabel.configure(image = img)
-        self.imageLabel.image = img
+        self.change_image(Image.open(image_file))
         self.resize_image((0,0))
 
     def show_histogram(self):
         self.histogram_window = histogram_window(self.image,self.image_path)
 
     def apply_greyscale(self):
-        pixels = self.image.load()
-        width, height = self.image.size
-        for i in range(width):    # for every pixel:
-            for j in range(height):
-                R,G,B = pixels[i,j]
-                grey = int(0.3*R + 0.59*G + 0.11*B)
-                pixels[i,j] = (grey, grey, grey)
+        gray_image = image_processing.greyscale(self.imagecopy)
+        self.change_image(gray_image)
+        self.resize_image((0,0))
 
+    def change_image(self, new_image):
+        self.image = new_image
         self.imagecopy = self.image.copy()
         img = ImageTk.PhotoImage(self.image)
         self.imageLabel.configure(image = img)
