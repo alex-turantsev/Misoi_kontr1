@@ -46,8 +46,9 @@ class ApplicationView:
         options['title'] = 'Choose file'
 
     def load_image(self):
-        self.image_path = tkFileDialog.askopenfile(**self.file_opt)
-        self.image = Image.open(self.image_path);
+        image_file = tkFileDialog.askopenfile(**self.file_opt)
+        self.image = Image.open(image_file);
+        self.image_file = image_file.name
         self.imagecopy = self.image.copy()
         img = ImageTk.PhotoImage(self.image)
         self.imageLabel.configure(image = img)
@@ -59,7 +60,7 @@ class ApplicationView:
 
     def resize_image(self,event):
         width, height = self.image.size
-        fwidth = self.root.winfo_width()-120
+        fwidth = self.root.winfo_width()-150
         fheight = self.imageLabel.winfo_height()
 
         ratiow = fwidth/float(width)

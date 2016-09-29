@@ -11,9 +11,9 @@ class histogram_window(tk.Tk):
         self.root = self
 
         self.title('Histogram '+ntpath.basename(path))
-        self.geometry('500x350');
-        self.minsize(500, 350)
-        self.maxsize(500, 350)
+        self.geometry('530x350');
+        self.minsize(530, 350)
+        self.maxsize(530, 350)
 
         intensities = self.calculate_intensities(image)
         self.draw_histogram(intensities)
@@ -29,29 +29,38 @@ class histogram_window(tk.Tk):
                 R,G,B = pixels[i,j]
                 index = float(R + G + B) / float(3)
                 intensities[int(index)] += 1
+                if int(index) > 255:
+                    print R, G, B, int(index), index
         return intensities
 
     def draw_histogram(self, data):
-        c_width = 500                                                       # Define it's width
+        c_width = 530                                                      # Define it's width
         c_height = 350                                                      # Define it's height
         c = tk.Canvas(self, width=c_width, height=c_height, bg= 'white')    # Create a canvas and use the earlier dimensions
         c.pack()
-        y_gap = 10
+        y_gap = 3
         y_stretch = c_height -y_gap*2                                                   # The highest y = max_data_value * y_stretch                                                        # The gap between lower canvas edge and x axis
-        x_stretch = 2                                                   # Stretch x wide enough to fit the variables
-        x_width = 1                                                        # The width of the x-axis
+        x_stretch = 1.8                                                   # Stretch x wide enough to fit the variables
+        x_width = 0.2                                                       # The width of the x-axis
         x_gap = 5                                                        # The gap between left canvas edge and y axis
 
         max_element = 0
+        index = 0
         for i in range(len(data)):
             if data[i] > max_element:
+                index = i
                 max_element = data[i]
 
-        for x, y in enumerate(data):                                        # A quick for loop to calculate the rectangle
-                                                                            # coordinates of each bar
+        #print max_element,index, data[index], data
+        for i in range(len(data)):                                        # A quick for loop to calculate the rectangle
+            x = i                                                                # coordinates of each bar
+            y = data[i]
             x0 = x * x_stretch + x * x_width + x_gap                        # Bottom left coordinate
             y0 = c_height - (y * y_stretch/max_element + y_gap)                         # Top left coordinates
             x1 = x * x_stretch + x * x_width + x_width + x_gap              # Bottom right coordinates
-            y1 = c_height - y_gap                                           # Top right coordinates
+            y1 = c_height - y_gap
+            if int(y0) == y1:
+                y0 -= 1                              # Top right coordinates
             c.create_rectangle(x0, y0, x1, y1, fill="grey", outline="grey")                  # Draw the bar
+            #print i, data[i],y * y_stretch/float(max_element)
             #c.create_text(x0+2, y0, anchor=tk.SW, text=str(y))              # Put the y value above the bar
