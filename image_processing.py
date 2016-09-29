@@ -15,3 +15,26 @@ class image_processing:
                 grey = int(0.3*R + 0.59*G + 0.11*B)
                 pixels[i,j] = (grey, grey, grey)
         return image_copy
+
+    @staticmethod
+    def prepare1(image,gmin,gmax):
+        new_d = 255 - (255 - gmax + gmin)
+        factor = new_d / 255.0
+        pixels = image.load()
+        width, height = image.size
+        for i in range(width):
+            for j in range(height):
+                R,G,B = pixels[i,j]
+                index = int((R + G + B) / float(3))
+                newpix = 255
+                if index < gmin:
+                    newpix = 0
+                else:
+                    if index <= gmax:
+                        newpix = gmin + int(index*factor)
+                pixels[i,j] = (newpix, newpix, newpix)
+        return image
+
+    @staticmethod
+    def preparew(image):
+        return image

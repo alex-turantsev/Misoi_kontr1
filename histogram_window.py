@@ -49,7 +49,6 @@ class histogram_window(tk.Tk):
                 index = i
                 max_element = data[i]
 
-        #print max_element,index, data[index], data
         for i in range(len(data)):                                        # A quick for loop to calculate the rectangle
             x = i                                                                # coordinates of each bar
             y = data[i]
@@ -60,5 +59,4 @@ class histogram_window(tk.Tk):
             if int(y0) == y1:
                 y0 -= 1                              # Top right coordinates
             c.create_rectangle(x0, y0, x1, y1, fill="grey", outline="grey")                  # Draw the bar
-            #print i, data[i],y * y_stretch/float(max_element)
             #c.create_text(x0+2, y0, anchor=tk.SW, text=str(y))              # Put the y value above the bar
