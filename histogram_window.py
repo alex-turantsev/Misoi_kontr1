@@ -29,8 +29,6 @@ class histogram_window(tk.Tk):
                 R,G,B = pixels[i,j]
                 index = float(R + G + B) / float(3)
                 intensities[int(index)] += 1
-                if int(index) > 255:
-                    print R, G, B, int(index), index
         return intensities
 
     def draw_histogram(self, data):
