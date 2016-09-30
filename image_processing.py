@@ -26,9 +26,9 @@ class image_processing:
             for j in range(height):
                 R,G,B = pixels[i,j]
                 index = int((R + G + B) / float(3))
-                newpix = 255
+                newpix = gmax
                 if index < gmin:
-                    newpix = 0
+                    newpix = gmin
                 else:
                     if index <= gmax:
                         newpix = gmin + int(index*factor)
@@ -36,5 +36,20 @@ class image_processing:
         return image
 
     @staticmethod
-    def preparew(image):
+    def prepare2(image,gmin,gmax):
+        new_d = 255 - (255 - gmax + gmin)
+        factor = new_d / 255.0
+        pixels = image.load()
+        width, height = image.size
+        for i in range(width):
+            for j in range(height):
+                R,G,B = pixels[i,j]
+                index = int((R + G + B) / float(3))
+                newpix = 255
+                if index < gmin:
+                    newpix = 0
+                else:
+                    if index <= gmax:
+                        newpix = int(index/factor)
+                pixels[i,j] = (newpix, newpix, newpix)
         return image

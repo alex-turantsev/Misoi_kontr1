@@ -19,8 +19,8 @@ class ApplicationView:
     def initialize(self,app):
         self.root = app
         self.histogram_window = None
-        self.imageFrame = tk.Frame(app,background="red")
-        self.imageFrame.pack(side = "left",fill = "both", expand = "True")
+        self.imageFrame = tk.Frame(app, bg="red")
+        self.imageFrame.pack(side = "left", fill = "both", expand = "True")
 
         self.buttonsFrame = tk.Frame(app, width = 0)
         self.buttonsFrame.pack(side = "right",fill = "y")
@@ -44,7 +44,6 @@ class ApplicationView:
 
         self.create_prepare_views(buttons_width)
 
-
         self.file_opt = options = {}
         options['defaultextension'] = '.jpg'
         options['filetypes'] = [('image files', ('.jpeg','.jpg','.JPG','.JPEG'))]
@@ -60,7 +59,7 @@ class ApplicationView:
 
         self.fmin_string = tk.StringVar()
         self.fmax_string = tk.StringVar()
-        self.create_prepare_view(width,2,self.apply_prepare2,"fmin","fmax",self.fmin_string,self.fmax_string)
+        self.create_prepare_view(width,2, self.apply_prepare2,"fmin","fmax",self.fmin_string,self.fmax_string)
 
     def create_prepare_view(self, buttons_width, number,command,name_min,name_max,min_stringvar,max_stringvar):
         prepare_frame = tk.Frame(self.buttonsFrame)
@@ -77,8 +76,8 @@ class ApplicationView:
 
         min_field = tk.Entry(min_frame, textvariable=min_stringvar,width = 6)
         min_field.pack( side = "right",padx = 8)
-        min_field.bind("<Button-1>", self.click_on_field)
-        min_stringvar.set(name_min)
+        #min_field.bind("<Button-1>", self.click_on_field)
+        min_stringvar.set(30)
 
         max_frame = tk.Frame(prepare_frame)
         max_frame.pack( side = "top", padx = 5, pady = 2)
@@ -88,8 +87,8 @@ class ApplicationView:
 
         max_field = tk.Entry(max_frame, textvariable=max_stringvar,width = 6)
         max_field.pack( side = "right",padx = 8)
-        max_field.bind("<Button-1>", self.click_on_field)
-        max_stringvar.set(name_max)
+        #max_field.bind("<Button-1>", self.click_on_field)
+        max_stringvar.set(220)
 
     def load_image(self):
         image_file = tkFileDialog.askopenfile(**self.file_opt)
@@ -106,13 +105,12 @@ class ApplicationView:
         self.resize_image((0,0))
 
     def apply_prepare1(self):
-        print self.gmin_string.get()
         prepare = image_processing.prepare1(image=self.imagecopy, gmin=int(self.gmin_string.get()), gmax=int(self.gmax_string.get()))
         self.change_image(prepare)
         self.resize_image((0,0))
 
     def apply_prepare2(self):
-        prepare = image_processing.prepare2(self.imagecopy)
+        prepare = image_processing.prepare2(image=self.imagecopy, gmin=int(self.fmin_string.get()), gmax=int(self.fmax_string.get()))
         self.change_image(prepare)
         self.resize_image((0,0))
 
