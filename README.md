@@ -6,5 +6,6 @@
 
 Практическая часть:
 - Препарирование изображения
-![alt text](https://github.com/alex-turantsev/Misoi_kontr1/blob/master/markdown/WF_shape_198.png "image preparing")
+![alt text][logo]
+[logo]https://github.com/alex-turantsev/Misoi_kontr1/blob/master/markdown/WF_shape_198.png "image preparing"
 - Min-фильтр, max-фильтр, min-max-фильтр
