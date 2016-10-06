@@ -46,7 +46,7 @@ class ApplicationView:
         options['title'] = 'Choose file'
 
     def create_left_buttons(self):
-        buttons_width = 12
+        buttons_width = 13
 
         self.create_button(parent=self.buttonsFrame,text="Load image",width=buttons_width,command=self.load_image_with_ask)
         self.create_button(parent=self.buttonsFrame,text="Show histogram",width=buttons_width,command=lambda:histogram_window(self.image,self.image_path))
@@ -103,12 +103,13 @@ class ApplicationView:
         max_stringvar.set(220)
 
     def load_image_with_ask(self):
-        self.image_path = tkFileDialog.askopenfile(mode='r',**self.file_opt)
-        if self.image_path is not None:
+        ff = tkFileDialog.askopenfile(mode='r',**self.file_opt)
+        if ff is not None:
+            self.image_path = ff.name
             self.load_image()
 
     def load_image(self):
-        file_extension = os.path.splitext(self.image_path.name)[1]
+        file_extension = os.path.splitext(self.image_path)[1]
         image = Image.open(self.image_path)
         if file_extension == '.png':
             timage = Image.new("RGB", image.size, (255, 255, 255))
@@ -118,11 +119,11 @@ class ApplicationView:
         self.resize_image((0,0))
 
     def save_image(self):
-        self.file_opt['initialfile'] = "1"+ntpath.basename(self.image_path.name);
+        self.file_opt['initialfile'] = "1"+ntpath.basename(self.image_path);
         f = tkFileDialog.asksaveasfile(mode='w', **self.file_opt )
         if f is None:
             return
-        self.imagecopy.save(f)
+        self.image.save(f.name)
 
     def apply_filter(self, id):
         image = None
@@ -156,7 +157,7 @@ class ApplicationView:
         if self.image is None:
             return;
         width, height = self.image.size
-        fwidth = self.root.winfo_width()-150
+        fwidth = self.root.winfo_width()-160
         fheight = self.imageLabel.winfo_height()
         ratiow = fwidth / float(width)
         ratiof = fheight / float(height)

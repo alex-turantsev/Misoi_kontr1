@@ -12,8 +12,8 @@ class histogram_window(tk.Tk):
 
         self.title('Histogram '+ntpath.basename(path))
         self.geometry('530x350');
-        self.minsize(530, 350)
-        self.maxsize(530, 350)
+        self.minsize(540, 350)
+        self.maxsize(540, 350)
 
         intensities = self.calculate_intensities(image)
         self.draw_histogram(intensities)
@@ -32,7 +32,7 @@ class histogram_window(tk.Tk):
         return intensities
 
     def draw_histogram(self, data):
-        c_width = 530                                                      # Define it's width
+        c_width = 540                                                     # Define it's width
         c_height = 350                                                      # Define it's height
         c = tk.Canvas(self, width=c_width, height=c_height, bg= 'white')    # Create a canvas and use the earlier dimensions
         c.pack()
