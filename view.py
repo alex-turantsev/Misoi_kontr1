@@ -30,6 +30,7 @@ class ApplicationView:
         self.imageLabel = tk.Label(self.imageFrame)
         self.imageLabel.pack(fill = "both", expand = "True")
         self.imageLabel.bind('<Configure>', self.resize_image)
+        self.image = None
         try:
             self.change_image(Image.open(self.image_path))
         except:
@@ -152,6 +153,8 @@ class ApplicationView:
         self.imageLabel.image = img
 
     def resize_image(self,event):
+        if self.image is None:
+            return;
         width, height = self.image.size
         fwidth = self.root.winfo_width()-150
         fheight = self.imageLabel.winfo_height()
