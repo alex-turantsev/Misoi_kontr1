@@ -16,5 +16,5 @@ if __name__ == "__main__":
     app = MyApplication()
     app.title('MISOI KR1')
     app.geometry('1000x600');
-    app.minsize(600, 400)
+    app.minsize(600, 500)
     app.mainloop()

@@ -5,7 +5,7 @@ from PIL import ImageTk, Image
 
 class image_processing:
     @staticmethod
-    def greyscale(image):
+    def grayscale(image):
         image_copy = image.copy()
         pixels = image_copy.load()
         width, height = image.size

@@ -4,12 +4,14 @@
 import Tkinter as tk
 import tkFileDialog
 import os
+import os.path
 from histogram_window import histogram_window
 from PIL import ImageTk, Image
 import subprocess
 import platform
 from image_processing import image_processing
-from operator_filter import min_filter, max_filter, minmax_filter
+from operator_filter import *
+import ntpath
 
 class ApplicationView:
     def __init__(self):
@@ -34,9 +36,9 @@ class ApplicationView:
 
         self.file_opt = options = {}
         options['defaultextension'] = '.jpg'
-        options['filetypes'] = [('image files', ('.jpeg','.jpg','.JPG','.JPEG'))]
+        options['filetypes'] = [('image files', ('.jpeg','.jpg','.JPG','.JPEG','.png','.PNG'))]
         options['initialdir'] = os.path.expanduser('~')
-        options['initialfile'] = 'myfile.txt'
+        options['initialfile'] = 'myfile.jpg'
         options['parent'] = app.root
         options['title'] = 'Choose file'
 
@@ -45,31 +47,31 @@ class ApplicationView:
 
         self.create_button(parent=self.buttonsFrame,text="Load image",width=buttons_width,command=self.load_image_with_ask)
         self.create_button(parent=self.buttonsFrame,text="Show histogram",width=buttons_width,command=lambda:histogram_window(self.image,self.image_path))
-        self.create_button(parent=self.buttonsFrame,text="Apply greyscale",width=buttons_width,command=lambda: self.apply_minfilter(3))
+        self.create_button(parent=self.buttonsFrame,text="Apply greyscale",width=buttons_width,command=lambda: self.apply_filter(3))
 
         self.create_prepare_views(buttons_width)
 
         frame = tk.Frame(self.buttonsFrame)
         frame.pack( side = "top", padx = 5, pady = 3)
 
-        self.create_button(parent=self.buttonsFrame,text="Min filter",width=buttons_width,command=lambda: self.apply_minfilter(0),pady=1)
-        self.create_button(parent=self.buttonsFrame,text="Max filter",width=buttons_width,command=lambda: self.apply_minfilter(1),pady=1)
-        self.create_button(parent=self.buttonsFrame,text="MinMax filter",width=buttons_width,command=lambda: self.apply_minfilter(2),pady=1)
-        self.create_button(parent=self.buttonsFrame,text="Reset",width=buttons_width,command=lambda: (self.change_image(Image.open(self.image_path)),self.resize_image((0,0))))
+        self.create_button(parent=self.buttonsFrame,text="Min filter",width=buttons_width,command=lambda: self.apply_filter(0),pady=1)
+        self.create_button(parent=self.buttonsFrame,text="Max filter",width=buttons_width,command=lambda: self.apply_filter(1),pady=1)
+        self.create_button(parent=self.buttonsFrame,text="MinMax filter",width=buttons_width,command=lambda: self.apply_filter(2),pady=1)
+        self.create_button(parent=self.buttonsFrame,text="Reset",width=buttons_width,command=lambda: self.load_image())
+        self.create_button(parent=self.buttonsFrame,text="Save image",width=buttons_width,command=lambda: self.save_image(),pady=6)
 
     def create_button(self, parent, text, width, command, pady=4):
         button = tk.Button(parent , text=text, width = width, command = command)
         button.pack( side = "top", padx = 5, pady = pady)
-        return button
 
     def create_prepare_views(self,width):
         self.gmin_string = tk.StringVar()
         self.gmax_string = tk.StringVar()
-        self.create_prepare_view(width,1,lambda: self.apply_minfilter(4),"gmin","gmax",self.gmin_string,self.gmax_string)
+        self.create_prepare_view(width,1,lambda: self.apply_filter(4),"gmin","gmax",self.gmin_string,self.gmax_string)
 
         self.fmin_string = tk.StringVar()
         self.fmax_string = tk.StringVar()
-        self.create_prepare_view(width,2, lambda: self.apply_minfilter(5),"fmin","fmax",self.fmin_string,self.fmax_string)
+        self.create_prepare_view(width,2, lambda: self.apply_filter(5),"fmin","fmax",self.fmin_string,self.fmax_string)
 
     def create_prepare_view(self, buttons_width, number,command,name_min,name_max,min_stringvar,max_stringvar):
         prepare_frame = tk.Frame(self.buttonsFrame)
@@ -80,7 +82,7 @@ class ApplicationView:
         min_frame = tk.Frame(prepare_frame)
         min_frame.pack( side = "top", padx = 5, pady = 0)
 
-        min_label = tk.Label(min_frame, text = name_min, width = 10)
+        min_label = tk.Label(min_frame, text = name_min, width = 7)
         min_label.pack(side = "left")
 
         min_field = tk.Entry(min_frame, textvariable=min_stringvar,width = 5)
@@ -90,7 +92,7 @@ class ApplicationView:
         max_frame = tk.Frame(prepare_frame)
         max_frame.pack( side = "top", padx = 5, pady = 0)
 
-        max_label = tk.Label(max_frame, text = name_max, width = 10)
+        max_label = tk.Label(max_frame, text = name_max, width = 7)
         max_label.pack(side = "left")
 
         max_field = tk.Entry(max_frame, textvariable=max_stringvar,width = 5)
@@ -98,11 +100,28 @@ class ApplicationView:
         max_stringvar.set(220)
 
     def load_image_with_ask(self):
-        self.image_path = tkFileDialog.askopenfile(**self.file_opt)
-        self.change_image(Image.open(self.image_path))
+        self.image_path = tkFileDialog.askopenfile(mode='r',**self.file_opt)
+        if self.image_path is not None:
+            self.load_image()
+
+    def load_image(self):
+        file_extension = os.path.splitext(self.image_path.name)[1]
+        image = Image.open(self.image_path)
+        if file_extension == '.png':
+            timage = Image.new("RGB", image.size, (255, 255, 255))
+            timage.paste(image, mask=image.split()[3])
+            image = timage
+        self.change_image(image)
         self.resize_image((0,0))
 
-    def apply_minfilter(self, id):
+    def save_image(self):
+        self.file_opt['initialfile'] = "1"+ntpath.basename(self.image_path.name);
+        f = tkFileDialog.asksaveasfile(mode='w', **self.file_opt )
+        if f is None:
+            return
+        self.imagecopy.save(f)
+
+    def apply_filter(self, id):
         image = None
         if id == 0:
             image = min_filter().apply_filter(self.imagecopy)
@@ -111,7 +130,7 @@ class ApplicationView:
         if id == 2:
             image = minmax_filter().apply_filter(self.imagecopy)
         if id == 3:
-            image = image_processing.greyscale(self.imagecopy)
+            image = image_processing.grayscale(self.imagecopy)
         if id == 4:
             image = image_processing.prepare1(image=self.imagecopy, gmin=int(self.gmin_string.get()), gmax=int(self.gmax_string.get()))
         if id == 5:
