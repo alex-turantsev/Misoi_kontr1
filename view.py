@@ -30,8 +30,10 @@ class ApplicationView:
         self.imageLabel = tk.Label(self.imageFrame)
         self.imageLabel.pack(fill = "both", expand = "True")
         self.imageLabel.bind('<Configure>', self.resize_image)
-        self.change_image(Image.open(self.image_path))
-
+        try:
+            self.change_image(Image.open(self.image_path))
+        except:
+            pass
         self.create_left_buttons()
 
         self.file_opt = options = {}
