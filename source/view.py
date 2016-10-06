@@ -136,9 +136,23 @@ class ApplicationView:
         if id == 3:
             image = image_processing.grayscale(self.imagecopy)
         if id == 4:
-            image = image_processing.prepare1(image=self.imagecopy, gmin=int(self.gmin_string.get()), gmax=int(self.gmax_string.get()))
+            try:
+                gmin = int(self.gmin_string.get())
+                gmax = int(self.gmax_string.get())
+                if  gmin < 0 or gmax > 255 or gmin > gmax:
+                    return
+                image = image_processing.prepare1(image=self.imagecopy, gmin=gmin, gmax=gmax)
+            except:
+                pass
         if id == 5:
-            image = image_processing.prepare2(image=self.imagecopy, gmin=int(self.fmin_string.get()), gmax=int(self.fmax_string.get()))
+            try:
+                fmin = int(self.fmin_string.get())
+                fmax = int(self.fmax_string.get())
+                if  fmin < 0 or fmax > 255 or fmin > fmax:
+                    return
+                image = image_processing.prepare2(image=self.imagecopy, gmin=fmin, gmax=fmax)
+            except:
+                pass
         if image != None:
             self.change_image(image)
             self.resize_image((0,0))
